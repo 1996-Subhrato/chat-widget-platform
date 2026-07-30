@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import { sequelize } from './models/index.js';
 
 import authRoutes from './routes/authRoutes.js';
+import subscriptionRoutes from './routes/subscriptionRoutes.js';
 
 const app = express();
 
@@ -51,6 +52,9 @@ app.get('/api/health', async (req, res) => {
 
 // Authentication API Routes
 app.use('/api/auth', authRoutes);
+
+// Subscription & API Key API Routes
+app.use('/api/subscription', subscriptionRoutes);
 
 // Centralized 404 Route Handler
 app.use((req, res, next) => {

@@ -17,7 +17,7 @@ export default (sequelize) => {
       }
     },
     plan_type: {
-      type: DataTypes.ENUM('trial', 'paid'),
+      type: DataTypes.ENUM('trial', 'basic', 'pro'),
       allowNull: false,
       defaultValue: 'trial'
     },

@@ -1,77 +1,274 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import { useAuth } from '../context/AuthContext';
+import api from '../services/api';
 
 export default function Dashboard() {
+  const { user, subscription } = useAuth();
+  const [apiKey, setApiKey] = useState('');
+  const [copied, setCopied] = useState(false);
+
+  useEffect(() => {
+    const fetchApiKey = async () => {
+      try {
+        const response = await api.get('/subscription/api-key');
+        if (response.data?.apiKey) {
+          setApiKey(response.data.apiKey);
+        }
+      } catch (error) {
+        console.error('[Dashboard API Key Error]:', error);
+      }
+    };
+    fetchApiKey();
+  }, []);
+
+  const handleCopyKey = () => {
+    if (!apiKey) return;
+    navigator.clipboard.writeText(apiKey);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
+
+  const formatPlanName = (planType) => {
+    if (!planType) return 'No Active Plan';
+    switch (planType.toLowerCase()) {
+      case 'trial': return '14-Day Free Trial';
+      case 'basic': return 'Basic Plan (₹100/mo)';
+      case 'pro': return 'Pro Plan (₹300/mo)';
+      default: return planType.toUpperCase();
+    }
+  };
+
   return (
-    <div>
-      <div style={{ marginBottom: '32px', textAlign: 'left' }}>
-        <h1>Console Dashboard</h1>
-        <p>Overview of your active widgets, subscriptions, and platform settings.</p>
-      </div>
-
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '24px', marginBottom: '32px' }}>
-        {/* Users Card */}
-        <div className="card" style={{ textAlign: 'left' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '8px' }}>👥</div>
-          <h3>Users</h3>
-          <p style={{ margin: '8px 0 16px' }}>Manage users details, account variables, profiles, and associations.</p>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span className="badge badge-success">Active</span>
-            <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>1 Total User</span>
-          </div>
+    <div style={{ textStyle: 'left' }}>
+      {/* Header section */}
+      <div style={{
+        marginBottom: '32px',
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'flex-start',
+        flexWrap: 'wrap',
+        gap: '16px'
+      }}>
+        <div>
+          <h1 style={{
+            fontSize: '2rem',
+            fontWeight: 800,
+            color: '#f8fafc',
+            margin: '0 0 8px 0',
+            letterSpacing: '-0.02em'
+          }}>
+            Welcome back, {user?.name || 'Developer'} 👋
+          </h1>
+          <p style={{ color: '#94a3b8', margin: 0, fontSize: '1rem' }}>
+            Overview of your subscription plan, identity profile, and integration API key.
+          </p>
         </div>
 
-        {/* Subscription Status Card */}
-        <div className="card" style={{ textAlign: 'left' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '8px' }}>💳</div>
-          <h3>Subscription</h3>
-          <p style={{ margin: '8px 0 16px' }}>Current billing plans, tier status, trial ranges, and usage allocations.</p>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span className="badge badge-primary">Trial</span>
-            <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>Ends in 14 days</span>
-          </div>
-        </div>
-
-        {/* API Keys Card */}
-        <div className="card" style={{ textAlign: 'left' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🔑</div>
-          <h3>API Keys</h3>
-          <p style={{ margin: '8px 0 16px' }}>Create and revoke cryptographically signed keys for widget communication.</p>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span className="badge badge-success">Secure</span>
-            <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>1 Active Key</span>
-          </div>
-        </div>
-
-        {/* Themes Card */}
-        <div className="card" style={{ textAlign: 'left' }}>
-          <div style={{ fontSize: '2rem', marginBottom: '8px' }}>🎨</div>
-          <h3>Widget Themes</h3>
-          <p style={{ margin: '8px 0 16px' }}>Choose custom skins, color codes, border dimensions, and styles.</p>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-            <span className="badge badge-primary">System Preset</span>
-            <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>5 Presets Loaded</span>
-          </div>
+        <div style={{
+          padding: '8px 16px',
+          borderRadius: '9999px',
+          backgroundColor: subscription?.status === 'active' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+          border: subscription?.status === 'active' ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)',
+          color: subscription?.status === 'active' ? '#10b981' : '#f87171',
+          fontSize: '0.875rem',
+          fontWeight: 600,
+          display: 'flex',
+          alignItems: 'center',
+          gap: '8px'
+        }}>
+          <span style={{
+            width: '8px',
+            height: '8px',
+            borderRadius: '50%',
+            backgroundColor: subscription?.status === 'active' ? '#10b981' : '#f87171'
+          }} />
+          <span>Status: {subscription?.status ? subscription.status.toUpperCase() : 'INACTIVE'}</span>
         </div>
       </div>
 
-      {/* Database Verification Indicator section */}
-      <div className="card" style={{ textAlign: 'left' }}>
-        <h3 style={{ marginBottom: '12px' }}>System Architecture & Connectivity</h3>
-        <p style={{ marginBottom: '20px' }}>
-          This interface is running on <strong>Phase 0 Foundation</strong> framework. Dynamic database connections are verified by the Express.js server and pooled via Sequelize ORM in real-time.
-        </p>
-        <div style={{ display: 'flex', gap: '20px', borderTop: '1px solid var(--border-color)', paddingTop: '20px' }}>
-          <div>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', display: 'block', textTransform: 'uppercase', fontWeight: 600 }}>Database Dialect</span>
-            <span style={{ fontWeight: 500 }}>MySQL 8.0</span>
+      {/* Grid of Profile & Subscription Cards */}
+      <div style={{
+        display: 'grid',
+        gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
+        gap: '24px',
+        marginBottom: '32px'
+      }}>
+        {/* Account Profile Card */}
+        <div style={{
+          backgroundColor: '#111827',
+          border: '1px solid #1f2937',
+          borderRadius: '16px',
+          padding: '24px',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+            <div style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(99, 102, 241, 0.15)',
+              color: '#818cf8',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.25rem',
+              fontWeight: 700
+            }}>
+              👤
+            </div>
+            <div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>
+                Account Identity
+              </div>
+              <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc' }}>
+                User Profile
+              </div>
+            </div>
           </div>
-          <div>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', display: 'block', textTransform: 'uppercase', fontWeight: 600 }}>ORM Layer</span>
-            <span style={{ fontWeight: 500 }}>Sequelize v6</span>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div>
+              <span style={{ fontSize: '0.8rem', color: '#64748b', display: 'block', marginBottom: '2px' }}>Full Name</span>
+              <span style={{ fontSize: '0.975rem', fontWeight: 600, color: '#e2e8f0' }}>{user?.name || 'N/A'}</span>
+            </div>
+
+            <div>
+              <span style={{ fontSize: '0.8rem', color: '#64748b', display: 'block', marginBottom: '2px' }}>Email Address</span>
+              <span style={{ fontSize: '0.975rem', fontWeight: 600, color: '#e2e8f0' }}>{user?.email || 'N/A'}</span>
+            </div>
           </div>
+        </div>
+
+        {/* Current Plan Card */}
+        <div style={{
+          backgroundColor: '#111827',
+          border: '1px solid #1f2937',
+          borderRadius: '16px',
+          padding: '24px',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+            <div style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(16, 185, 129, 0.15)',
+              color: '#10b981',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.25rem',
+              fontWeight: 700
+            }}>
+              💳
+            </div>
+            <div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>
+                Active SaaS Tier
+              </div>
+              <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc' }}>
+                Subscription Plan
+              </div>
+            </div>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div>
+              <span style={{ fontSize: '0.8rem', color: '#64748b', display: 'block', marginBottom: '2px' }}>Current Plan</span>
+              <span style={{ fontSize: '1.1rem', fontWeight: 700, color: '#10b981' }}>
+                {formatPlanName(subscription?.plan_type)}
+              </span>
+            </div>
+
+            <div>
+              <span style={{ fontSize: '0.8rem', color: '#64748b', display: 'block', marginBottom: '2px' }}>Subscription Status</span>
+              <span style={{
+                display: 'inline-block',
+                padding: '4px 12px',
+                borderRadius: '6px',
+                fontSize: '0.85rem',
+                fontWeight: 600,
+                backgroundColor: subscription?.status === 'active' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                color: subscription?.status === 'active' ? '#34d399' : '#f87171'
+              }}>
+                {subscription?.status ? subscription.status.toUpperCase() : 'NO SUBSCRIPTION'}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* API Key Card */}
+        <div style={{
+          backgroundColor: '#111827',
+          border: '1px solid #1f2937',
+          borderRadius: '16px',
+          padding: '24px',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.2)'
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '20px' }}>
+            <div style={{
+              width: '44px',
+              height: '44px',
+              borderRadius: '12px',
+              backgroundColor: 'rgba(245, 158, 11, 0.15)',
+              color: '#f59e0b',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.25rem',
+              fontWeight: 700
+            }}>
+              🔑
+            </div>
+            <div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>
+                Access Credentials
+              </div>
+              <div style={{ fontSize: '1.1rem', fontWeight: 700, color: '#f8fafc' }}>
+                Integration API Key
+              </div>
+            </div>
+          </div>
+
           <div>
-            <span style={{ color: 'var(--text-muted)', fontSize: '0.75rem', display: 'block', textTransform: 'uppercase', fontWeight: 600 }}>Server Env</span>
-            <span style={{ fontWeight: 500 }}>Express (ES Modules)</span>
+            <span style={{ fontSize: '0.8rem', color: '#64748b', display: 'block', marginBottom: '6px' }}>Active API Key</span>
+            {apiKey ? (
+              <div style={{ display: 'flex', gap: '8px', alignItems: 'center' }}>
+                <code style={{
+                  flex: 1,
+                  fontSize: '0.85rem',
+                  fontFamily: 'monospace',
+                  backgroundColor: '#090d16',
+                  color: '#34d399',
+                  padding: '8px 12px',
+                  borderRadius: '8px',
+                  border: '1px solid #1f2937',
+                  overflow: 'hidden',
+                  textOverflow: 'ellipsis',
+                  whiteSpace: 'nowrap'
+                }}>
+                  {apiKey}
+                </code>
+                <button
+                  onClick={handleCopyKey}
+                  style={{
+                    padding: '8px 12px',
+                    borderRadius: '8px',
+                    backgroundColor: copied ? '#10b981' : '#374151',
+                    color: '#ffffff',
+                    border: 'none',
+                    fontSize: '0.8rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    whiteSpace: 'nowrap'
+                  }}
+                >
+                  {copied ? 'Copied' : 'Copy'}
+                </button>
+              </div>
+            ) : (
+              <span style={{ fontSize: '0.875rem', color: '#94a3b8' }}>Loading API key...</span>
+            )}
           </div>
         </div>
       </div>

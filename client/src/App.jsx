@@ -12,6 +12,7 @@ import AuthLayout from './layouts/AuthLayout';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Onboarding from './pages/Onboarding';
+import OnboardingSuccess from './pages/OnboardingSuccess';
 import Dashboard from './pages/Dashboard';
 import Widgets from './pages/Widgets';
 import Playground from './pages/Playground';
@@ -22,10 +23,10 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Default Redirect to Onboarding */}
-          <Route path="/" element={<Navigate to="/onboarding" replace />} />
+          {/* Default Root Redirect to Dashboard */}
+          <Route path="/" element={<Navigate to="/dashboard" replace />} />
 
-          {/* Public Auth Routes (Redirect to /onboarding if logged in) */}
+          {/* Public Auth Routes */}
           <Route element={<PublicRoute />}>
             <Route element={<AuthLayout />}>
               <Route path="/login" element={<Login />} />
@@ -33,15 +34,18 @@ export default function App() {
             </Route>
           </Route>
 
-          {/* Protected Onboarding Route */}
-          <Route element={<ProtectedRoute />}>
-            <Route element={<AuthLayout />}>
-              <Route path="/onboarding" element={<Onboarding />} />
-            </Route>
+          {/* Protected Onboarding Pricing Route (for users selecting a plan) */}
+          <Route element={<ProtectedRoute allowWithoutSubscription={true} disallowWithSubscription={true} />}>
+            <Route path="/onboarding" element={<Onboarding />} />
           </Route>
 
-          {/* Protected Console Routes */}
-          <Route element={<ProtectedRoute />}>
+          {/* Protected Onboarding Completion / Success Route */}
+          <Route element={<ProtectedRoute allowWithoutSubscription={true} />}>
+            <Route path="/onboarding/success" element={<OnboardingSuccess />} />
+          </Route>
+
+          {/* Protected Console Routes (requires active subscription) */}
+          <Route element={<ProtectedRoute allowWithoutSubscription={false} />}>
             <Route element={<AppLayout />}>
               <Route path="/dashboard" element={<Dashboard />} />
               <Route path="/widgets" element={<Widgets />} />
@@ -51,7 +55,7 @@ export default function App() {
           </Route>
 
           {/* Fallback Catch-All route */}
-          <Route path="*" element={<Navigate to="/onboarding" replace />} />
+          <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

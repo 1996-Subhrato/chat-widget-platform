@@ -3,7 +3,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export default function PublicRoute({ children }) {
-  const { isAuthenticated, loading } = useAuth();
+  const { isAuthenticated, hasActiveSubscription, loading } = useAuth();
 
   if (loading) {
     return (
@@ -12,8 +12,8 @@ export default function PublicRoute({ children }) {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        background: 'var(--bg-color, #0f172a)',
-        color: 'var(--text-color, #f8fafc)',
+        background: '#090d16',
+        color: '#f8fafc',
         fontSize: '1rem',
         fontWeight: 500
       }}>
@@ -32,8 +32,13 @@ export default function PublicRoute({ children }) {
     );
   }
 
+  // Authenticated user visiting login/signup: Redirect based on subscription state
   if (isAuthenticated) {
-    return <Navigate to="/onboarding" replace />;
+    if (hasActiveSubscription) {
+      return <Navigate to="/dashboard" replace />;
+    } else {
+      return <Navigate to="/onboarding" replace />;
+    }
   }
 
   return children ? children : <Outlet />;

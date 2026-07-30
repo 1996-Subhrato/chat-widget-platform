@@ -2,8 +2,8 @@ import React from 'react';
 import { Navigate, Outlet } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
-export default function ProtectedRoute({ children }) {
-  const { isAuthenticated, loading } = useAuth();
+export default function ProtectedRoute({ children, allowWithoutSubscription = false, disallowWithSubscription = false }) {
+  const { isAuthenticated, hasActiveSubscription, loading } = useAuth();
 
   if (loading) {
     return (
@@ -12,8 +12,8 @@ export default function ProtectedRoute({ children }) {
         justifyContent: 'center',
         alignItems: 'center',
         minHeight: '100vh',
-        background: 'var(--bg-color, #0f172a)',
-        color: 'var(--text-color, #f8fafc)',
+        background: '#090d16',
+        color: '#f8fafc',
         fontSize: '1rem',
         fontWeight: 500
       }}>
@@ -26,14 +26,25 @@ export default function ProtectedRoute({ children }) {
             borderRadius: '50%',
             animation: 'spin 0.8s linear infinite'
           }} />
-          <span>Verifying authentication...</span>
+          <span>Verifying authentication & subscription...</span>
         </div>
       </div>
     );
   }
 
+  // Must be logged in
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
+  }
+
+  // If user has an active subscription and route disallows subscribed users (e.g., onboarding pricing page)
+  if (disallowWithSubscription && hasActiveSubscription) {
+    return <Navigate to="/dashboard" replace />;
+  }
+
+  // If route requires active subscription and user doesn't have one
+  if (!allowWithoutSubscription && !hasActiveSubscription) {
+    return <Navigate to="/onboarding" replace />;
   }
 
   return children ? children : <Outlet />;
