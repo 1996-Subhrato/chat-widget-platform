@@ -2,21 +2,20 @@
 
 A production-grade, multi-tenant SaaS application that allows users to customize, preview, and embed chat widgets on their websites.
 
-> **Status**: **Phase 1 Completed** (Monorepo setup, Database Schema & Relational Models, Authentication Engine & HTTP-only JWT Sessions, React Frontend Routing & Auth Context).
+> **Status**: **Phase 2 Completed** (Monorepo setup, Database Schema & Relational Models, HTTP-only JWT Authentication, Multi-tier SaaS Plan Selection, Automated API Key Provisioning, Interactive Onboarding & Script Reveal, Subscription-Aware Route Protection).
 
 ---
 
-## Phase 1 Accomplishments
+## Accomplishments
 
-During **Phase 1**, the core platform foundation and security layer were established:
-
+### Phase 1: Core Architecture & Authentication Engine
 1. **Monorepo Architecture**:
    - **Frontend**: Vite + React SPA with custom styling and client-side routing (`react-router-dom`).
    - **Backend**: Node.js + Express RESTful API server with security standard middleware (`helmet`, `cors`, `cookie-parser`, `morgan`).
 2. **Database Foundation (MySQL + Sequelize ORM)**:
    - Configured migrations and seeders for relational database entities:
      - `Users`: Multi-tenant identity store with hashed credentials (`bcryptjs`).
-     - `Subscriptions`: Multi-tier plan management (Free, Pro, Enterprise).
+     - `Subscriptions`: Multi-tier plan management.
      - `ApiKeys`: Tenant API key provision & secret hash management.
      - `WidgetThemes`: Customizable visual themes and preset themes (Ocean, Sunset, Forest, Midnight, Minimal).
 3. **Authentication & Session Security**:
@@ -26,7 +25,28 @@ During **Phase 1**, the core platform foundation and security layer were establi
 4. **React Client Dashboard & Context**:
    - Global `AuthContext` managing user authentication states, persistent session rehydration on reload (`/api/auth/me`), and login/logout handling.
    - Component-level route guards (`ProtectedRoute`, `PublicRoute`).
-   - Views implemented: Login, Signup, Onboarding, Dashboard, Widgets, Playground, and Settings.
+
+---
+
+### Phase 2: SaaS Subscription Engine, API Key Management & Onboarding Flow
+1. **Multi-Tier Subscription & SaaS Billing Engine**:
+   - Database schema migration for plan types (`trial`, `basic`, `pro`).
+   - Service layer (`subscriptionService.js`) enforcing strict 1-time 14-day trial usage policy per account, active subscription checks, upgrade/downgrade state management, and trial expiry auto-detection.
+2. **Automated API Key Provisioning & Key Revocation Engine**:
+   - Cryptographically secure API key generation (`generateApiKeyValue` creating `pk_live_` prefixed hex tokens via Node.js `crypto.randomBytes`).
+   - Automatic creation of live API key upon plan selection.
+   - Prefix tracking (`key_prefix`) and automatic atomic revocation of legacy active keys (`revoked: true`).
+3. **Multi-Step Onboarding & Interactive Plan Selection**:
+   - Multi-step onboarding UI (`Onboarding.jsx`) featuring tier comparison (Trial vs Basic vs Pro) with monthly/yearly toggle options.
+   - Simulated payment & billing modal for paid plans (Basic and Pro) with live form validation.
+4. **Onboarding Success & Embed Code Snippet Generator**:
+   - Dedicated onboarding completion screen (`OnboardingSuccess.jsx`) providing secure API key reveal with single-click copy functionality.
+   - HTML embed snippet generator producing ready-to-use `<script>` tags for third-party website integration (`<script src="..." data-api-key="pk_live_..."></script>`).
+5. **Subscription-Aware Route Gating & Context Sync**:
+   - Enhanced `AuthContext` with subscription state management (`subscription`, `hasActiveSubscription`, `refreshSubscription`).
+   - Granular `ProtectedRoute` and `PublicRoute` wrappers ensuring users without an active plan are automatically directed to `/onboarding`, while fully onboarded users access the console.
+6. **Dashboard Subscription Metrics & Key Overview**:
+   - Upgraded `Dashboard.jsx` displaying active subscription badges (Trial/Basic/Pro), trial expiration countdown, API key management card, live embed snippet box, and tier upgrade shortcuts.
 
 ---
 
@@ -41,22 +61,22 @@ chat-widget-platform/
 │   │   ├── context/        # React context providers (AuthContext)
 │   │   ├── hooks/          # Custom React hooks
 │   │   ├── layouts/        # AppLayout and AuthLayout wrappers
-│   │   ├── pages/          # Dashboard, Login, Signup, Onboarding, Widgets, Playground, Settings
+│   │   ├── pages/          # Dashboard, Login, Signup, Onboarding, OnboardingSuccess, Widgets, Playground, Settings
 │   │   ├── services/       # Axios API client setup (`withCredentials: true`)
 │   │   └── utils/          # Helper utilities
 │   ├── package.json
 │   └── vite.config.js
 ├── server/                 # Node.js + Express + Sequelize Backend
 │   ├── config/             # Database connection & Sequelize configs
-│   ├── controllers/        # Route controllers (authController)
+│   ├── controllers/        # Route controllers (authController, subscriptionController)
 │   ├── middleware/         # Express middleware (authMiddleware, CORS, error handler)
 │   ├── migrations/         # Database migrations (users, subscriptions, api_keys, widget_themes)
 │   ├── models/             # Sequelize models (User, Subscription, ApiKey, WidgetTheme)
-│   ├── routes/             # Express API routes (authRoutes)
+│   ├── routes/             # Express API routes (authRoutes, subscriptionRoutes)
 │   ├── seeders/            # Database seeders (preset widget themes)
-│   ├── services/           # Business logic layer
+│   ├── services/           # Business logic layer (subscriptionService)
 │   ├── utils/              # Utility functions
-│   ├── validators/         # Zod schema validators (authValidator)
+│   ├── validators/         # Zod schema validators (authValidator, subscriptionValidator)
 │   ├── app.js              # Express app configuration & middleware pipeline
 │   ├── server.js           # Server entry point & DB connection initialization
 │   ├── .sequelizerc        # Sequelize CLI configuration
@@ -163,7 +183,7 @@ The React development app runs on `http://localhost:5173`.
 
 ---
 
-## Phase 1 API Documentation
+## API Documentation
 
 ### Health Check
 
@@ -180,7 +200,7 @@ The React development app runs on `http://localhost:5173`.
 ### Authentication Endpoints
 
 - **`POST /api/auth/signup`**
-  - **Description**: Registers a new user and creates default tenant data.
+  - **Description**: Registers a new user account.
   - **Request Body**:
     ```json
     {
@@ -243,11 +263,64 @@ The React development app runs on `http://localhost:5173`.
     }
     ```
 
+### Subscription & API Key Endpoints (Phase 2)
+
+- **`POST /api/subscription/select`**
+  - **Description**: Selects or upgrades a subscription plan (`trial`, `basic`, `pro`) and generates an active tenant API key.
+  - **Headers**: Cookie-based authentication (`authMiddleware`).
+  - **Request Body**:
+    ```json
+    {
+      "planType": "trial"
+    }
+    ```
+  - **Response (200 OK)**:
+    ```json
+    {
+      "subscription": {
+        "id": "uuid-v4",
+        "user_id": "uuid-v4",
+        "plan_type": "trial",
+        "status": "active",
+        "trial_started_at": "2026-07-30T10:00:00.000Z",
+        "trial_ends_at": "2026-08-13T10:00:00.000Z"
+      },
+      "apiKey": "pk_live_a1b2c3d4e5f678901234567890abcdef"
+    }
+    ```
+
+- **`GET /api/subscription/current`**
+  - **Description**: Fetches current subscription details for the authenticated user, automatically evaluating trial expiration status.
+  - **Headers**: Cookie-based authentication (`authMiddleware`).
+  - **Response (200 OK)**:
+    ```json
+    {
+      "subscription": {
+        "id": "uuid-v4",
+        "user_id": "uuid-v4",
+        "plan_type": "trial",
+        "status": "active",
+        "trial_started_at": "2026-07-30T10:00:00.000Z",
+        "trial_ends_at": "2026-08-13T10:00:00.000Z"
+      }
+    }
+    ```
+
+- **`GET /api/subscription/api-key`**
+  - **Description**: Retrieves the active, non-revoked API key for the authenticated user.
+  - **Headers**: Cookie-based authentication (`authMiddleware`).
+  - **Response (200 OK)**:
+    ```json
+    {
+      "apiKey": "pk_live_a1b2c3d4e5f678901234567890abcdef"
+    }
+    ```
+
 ---
 
-## Next Steps (Phase 2 Roadmap)
+## Next Steps (Phase 3 Roadmap)
 
-- [ ] Widget Theme Customization API & Live Playground Editor
+- [ ] Live Widget Theme Editor & Customization Studio (Colors, Typography, Positions, Preset Themes)
 - [ ] Embeddable Lightweight JS Script (`widget.js`) for Third-party Sites
-- [ ] Real-time Chat Gateway (WebSockets / Socket.io)
-- [ ] Tenant API Key Generator & Management Interface
+- [ ] Real-time Chat Gateway (WebSockets / Socket.io) & Agent Console
+- [ ] Analytics & Chat Performance Dashboard
