@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
+import { User, CreditCard, Key, Copy, Check, CheckCircle2, AlertCircle } from 'lucide-react';
 
 export default function Dashboard() {
   const { user, subscription } = useAuth();
@@ -38,6 +39,8 @@ export default function Dashboard() {
     }
   };
 
+  const isActive = subscription?.status === 'active';
+
   return (
     <div style={{ textStyle: 'left' }}>
       {/* Header section */}
@@ -57,7 +60,7 @@ export default function Dashboard() {
             margin: '0 0 8px 0',
             letterSpacing: '-0.02em'
           }}>
-            Welcome back, {user?.name || 'Developer'} 👋
+            Welcome back, {user?.name || 'Developer'}
           </h1>
           <p style={{ color: '#94a3b8', margin: 0, fontSize: '1rem' }}>
             Overview of your subscription plan, identity profile, and integration API key.
@@ -67,21 +70,16 @@ export default function Dashboard() {
         <div style={{
           padding: '8px 16px',
           borderRadius: '9999px',
-          backgroundColor: subscription?.status === 'active' ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
-          border: subscription?.status === 'active' ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)',
-          color: subscription?.status === 'active' ? '#10b981' : '#f87171',
+          backgroundColor: isActive ? 'rgba(16, 185, 129, 0.12)' : 'rgba(239, 68, 68, 0.12)',
+          border: isActive ? '1px solid rgba(16, 185, 129, 0.3)' : '1px solid rgba(239, 68, 68, 0.3)',
+          color: isActive ? '#10b981' : '#f87171',
           fontSize: '0.875rem',
           fontWeight: 600,
           display: 'flex',
           alignItems: 'center',
           gap: '8px'
         }}>
-          <span style={{
-            width: '8px',
-            height: '8px',
-            borderRadius: '50%',
-            backgroundColor: subscription?.status === 'active' ? '#10b981' : '#f87171'
-          }} />
+          {isActive ? <CheckCircle2 size={16} /> : <AlertCircle size={16} />}
           <span>Status: {subscription?.status ? subscription.status.toUpperCase() : 'INACTIVE'}</span>
         </div>
       </div>
@@ -110,11 +108,9 @@ export default function Dashboard() {
               color: '#818cf8',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '1.25rem',
-              fontWeight: 700
+              justifyContent: 'center'
             }}>
-              👤
+              <User size={22} />
             </div>
             <div>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>
@@ -156,11 +152,9 @@ export default function Dashboard() {
               color: '#10b981',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '1.25rem',
-              fontWeight: 700
+              justifyContent: 'center'
             }}>
-              💳
+              <CreditCard size={22} />
             </div>
             <div>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>
@@ -188,8 +182,8 @@ export default function Dashboard() {
                 borderRadius: '6px',
                 fontSize: '0.85rem',
                 fontWeight: 600,
-                backgroundColor: subscription?.status === 'active' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
-                color: subscription?.status === 'active' ? '#34d399' : '#f87171'
+                backgroundColor: isActive ? 'rgba(16, 185, 129, 0.15)' : 'rgba(239, 68, 68, 0.15)',
+                color: isActive ? '#34d399' : '#f87171'
               }}>
                 {subscription?.status ? subscription.status.toUpperCase() : 'NO SUBSCRIPTION'}
               </span>
@@ -214,11 +208,9 @@ export default function Dashboard() {
               color: '#f59e0b',
               display: 'flex',
               alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '1.25rem',
-              fontWeight: 700
+              justifyContent: 'center'
             }}>
-              🔑
+              <Key size={22} />
             </div>
             <div>
               <div style={{ fontSize: '0.75rem', fontWeight: 600, color: '#64748b', textTransform: 'uppercase' }}>
@@ -260,10 +252,14 @@ export default function Dashboard() {
                     fontSize: '0.8rem',
                     fontWeight: 600,
                     cursor: 'pointer',
-                    whiteSpace: 'nowrap'
+                    whiteSpace: 'nowrap',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px'
                   }}
                 >
-                  {copied ? 'Copied' : 'Copy'}
+                  {copied ? <Check size={14} /> : <Copy size={14} />}
+                  <span>{copied ? 'Copied' : 'Copy'}</span>
                 </button>
               </div>
             ) : (

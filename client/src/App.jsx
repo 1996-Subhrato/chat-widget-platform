@@ -9,6 +9,7 @@ import AppLayout from './layouts/AppLayout';
 import AuthLayout from './layouts/AuthLayout';
 
 // Pages
+import Landing from './pages/Landing';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Onboarding from './pages/Onboarding';
@@ -23,8 +24,8 @@ export default function App() {
     <AuthProvider>
       <BrowserRouter>
         <Routes>
-          {/* Default Root Redirect to Dashboard */}
-          <Route path="/" element={<Navigate to="/dashboard" replace />} />
+          {/* Public Landing Page on "/" */}
+          <Route path="/" element={<Landing />} />
 
           {/* Public Auth Routes */}
           <Route element={<PublicRoute />}>
@@ -55,7 +56,7 @@ export default function App() {
           </Route>
 
           {/* Fallback Catch-All route */}
-          <Route path="*" element={<Navigate to="/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { ArrowLeft } from 'lucide-react';
 
 export default function Login() {
   const navigate = useNavigate();
@@ -68,6 +69,13 @@ export default function Login() {
 
   return (
     <div>
+      <div style={{ textAlign: 'left', marginBottom: '16px' }}>
+        <Link to="/" style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: 500 }}>
+          <ArrowLeft size={16} />
+          <span>Back to Landing Page</span>
+        </Link>
+      </div>
+
       <h2 style={{ marginBottom: '8px' }}>Welcome back</h2>
       <p style={{ marginBottom: '24px', fontSize: '0.875rem' }}>Sign in to manage your chat widgets</p>
 
@@ -130,12 +138,19 @@ export default function Login() {
         </button>
       </form>
 
-      <p style={{ marginTop: '24px', fontSize: '0.875rem' }}>
-        Don't have an account?{' '}
-        <Link to="/signup" style={{ color: 'var(--accent-color)', fontWeight: 500 }}>
-          Create an account
+      <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', fontSize: '0.875rem' }}>
+        <p style={{ margin: 0 }}>
+          Don't have an account?{' '}
+          <Link to="/signup" style={{ color: 'var(--accent-color)', fontWeight: 500 }}>
+            Create an account
+          </Link>
+        </p>
+
+        <Link to="/" style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: 500 }}>
+          <ArrowLeft size={14} />
+          <span>Back to Landing Page</span>
         </Link>
-      </p>
+      </div>
     </div>
   );
 }

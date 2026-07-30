@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import api from '../services/api';
+import { Check, Copy, ArrowRight, ShieldCheck, Key } from 'lucide-react';
 
 export default function OnboardingSuccess() {
   const location = useLocation();
@@ -128,10 +129,9 @@ export default function OnboardingSuccess() {
           justifyContent: 'center',
           margin: '0 auto 24px auto',
           color: '#10b981',
-          fontSize: '2rem',
           boxShadow: '0 0 20px rgba(16, 185, 129, 0.2)'
         }}>
-          ✓
+          <ShieldCheck size={32} />
         </div>
 
         {/* Heading */}
@@ -170,9 +170,13 @@ export default function OnboardingSuccess() {
             color: '#64748b',
             textTransform: 'uppercase',
             letterSpacing: '0.05em',
-            marginBottom: '8px'
+            marginBottom: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '6px'
           }}>
-            Your Live API Key
+            <Key size={14} />
+            <span>Your Live API Key</span>
           </div>
 
           <div style={{
@@ -182,7 +186,7 @@ export default function OnboardingSuccess() {
           }}>
             <code style={{
               flex: 1,
-              fontFamily: 'Fira Code, monospace, Courier',
+              fontFamily: 'monospace',
               fontSize: '0.92rem',
               color: '#34d399',
               backgroundColor: '#030712',
@@ -207,10 +211,14 @@ export default function OnboardingSuccess() {
                 fontWeight: 600,
                 cursor: 'pointer',
                 transition: 'all 0.2s ease',
-                whiteSpace: 'nowrap'
+                whiteSpace: 'nowrap',
+                display: 'inline-flex',
+                alignItems: 'center',
+                gap: '6px'
               }}
             >
-              {copied ? '✓ Copied!' : 'Copy API Key'}
+              {copied ? <Check size={16} /> : <Copy size={16} />}
+              <span>{copied ? 'Copied!' : 'Copy Key'}</span>
             </button>
           </div>
         </div>
@@ -239,10 +247,15 @@ export default function OnboardingSuccess() {
             fontWeight: 700,
             cursor: 'pointer',
             boxShadow: '0 4px 14px rgba(16, 185, 129, 0.3)',
-            transition: 'background-color 0.2s ease, transform 0.15s ease'
+            transition: 'background-color 0.2s ease, transform 0.15s ease',
+            display: 'inline-flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            gap: '8px'
           }}
         >
-          Continue to Dashboard →
+          <span>Continue to Dashboard</span>
+          <ArrowRight size={18} />
         </button>
       </div>
     </div>

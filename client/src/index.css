@@ -39,6 +39,27 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  scrollbar-width: thin;
+  scrollbar-color: var(--border-color) var(--bg-primary);
+}
+
+/* Custom Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #242f47;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-color);
 }
 
 body {
@@ -74,27 +95,36 @@ button, input, select, textarea {
 /* Common Layout Elements */
 .app-container {
   display: flex;
-  min-height: 100vh;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
 }
 
 .sidebar {
   width: 260px;
+  height: 100vh;
+  flex-shrink: 0;
   background-color: var(--bg-secondary);
   border-right: 1px solid var(--border-color);
   display: flex;
   flex-direction: column;
   padding: 24px;
+  overflow-y: auto;
 }
 
 .main-content {
   flex: 1;
+  min-width: 0;
+  height: 100vh;
   display: flex;
   flex-direction: column;
   background-color: var(--bg-primary);
+  overflow: hidden;
 }
 
 .navbar {
   height: 70px;
+  flex-shrink: 0;
   border-bottom: 1px solid var(--border-color);
   background-color: var(--bg-secondary);
   display: flex;
@@ -252,13 +282,25 @@ p {
 
 .auth-card {
   width: 100%;
-  max-width: 440px;
+  max-width: 580px;
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-lg);
   padding: 40px;
   box-shadow: var(--shadow-lg);
   text-align: center;
+}
+
+.form-grid-2col {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+@media (max-width: 540px) {
+  .form-grid-2col {
+    grid-template-columns: 1fr;
+  }
 }
 
 .logo-container {

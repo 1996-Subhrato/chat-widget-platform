@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { ArrowLeft } from 'lucide-react';
 
 export default function Signup() {
   const navigate = useNavigate();
@@ -86,6 +87,13 @@ export default function Signup() {
 
   return (
     <div>
+      <div style={{ textAlign: 'left', marginBottom: '16px' }}>
+        <Link to="/" style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: 500 }}>
+          <ArrowLeft size={16} />
+          <span>Back to Landing Page</span>
+        </Link>
+      </div>
+
       <h2 style={{ marginBottom: '8px' }}>Get Started</h2>
       <p style={{ marginBottom: '24px', fontSize: '0.875rem' }}>Create an account to deploy dynamic chat widgets</p>
 
@@ -102,62 +110,64 @@ export default function Signup() {
       )}
 
       <form onSubmit={handleSubmit} noValidate>
-        <div className="form-group">
-          <label className="form-label" htmlFor="name">Full Name</label>
-          <input
-            type="text"
-            id="name"
-            className="form-control"
-            placeholder="John Doe"
-            value={formData.name}
-            onChange={handleChange}
-            disabled={isSubmitting}
-          />
-          {fieldErrors.name && <span className="form-error">{fieldErrors.name}</span>}
-        </div>
+        <div className="form-grid-2col">
+          <div className="form-group">
+            <label className="form-label" htmlFor="name">Full Name</label>
+            <input
+              type="text"
+              id="name"
+              className="form-control"
+              placeholder="John Doe"
+              value={formData.name}
+              onChange={handleChange}
+              disabled={isSubmitting}
+            />
+            {fieldErrors.name && <span className="form-error">{fieldErrors.name}</span>}
+          </div>
 
-        <div className="form-group">
-          <label className="form-label" htmlFor="email">Email Address</label>
-          <input
-            type="email"
-            id="email"
-            className="form-control"
-            placeholder="name@example.com"
-            value={formData.email}
-            onChange={handleChange}
-            disabled={isSubmitting}
-          />
-          {fieldErrors.email && <span className="form-error">{fieldErrors.email}</span>}
-        </div>
+          <div className="form-group">
+            <label className="form-label" htmlFor="email">Email Address</label>
+            <input
+              type="email"
+              id="email"
+              className="form-control"
+              placeholder="name@example.com"
+              value={formData.email}
+              onChange={handleChange}
+              disabled={isSubmitting}
+            />
+            {fieldErrors.email && <span className="form-error">{fieldErrors.email}</span>}
+          </div>
 
-        <div className="form-group">
-          <label className="form-label" htmlFor="password">Password</label>
-          <input
-            type="password"
-            id="password"
-            className="form-control"
-            placeholder="••••••••"
-            value={formData.password}
-            onChange={handleChange}
-            disabled={isSubmitting}
-          />
-          {fieldErrors.password && <span className="form-error">{fieldErrors.password}</span>}
-        </div>
+          <div className="form-group">
+            <label className="form-label" htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              className="form-control"
+              placeholder="••••••••"
+              value={formData.password}
+              onChange={handleChange}
+              disabled={isSubmitting}
+            />
+            {fieldErrors.password && <span className="form-error">{fieldErrors.password}</span>}
+          </div>
 
-        <div className="form-group">
-          <label className="form-label" htmlFor="confirmPassword">Confirm Password</label>
-          <input
-            type="password"
-            id="confirmPassword"
-            className="form-control"
-            placeholder="••••••••"
-            value={formData.confirmPassword}
-            onChange={handleChange}
-            disabled={isSubmitting}
-          />
-          {fieldErrors.confirmPassword && (
-            <span className="form-error">{fieldErrors.confirmPassword}</span>
-          )}
+          <div className="form-group">
+            <label className="form-label" htmlFor="confirmPassword">Confirm Password</label>
+            <input
+              type="password"
+              id="confirmPassword"
+              className="form-control"
+              placeholder="••••••••"
+              value={formData.confirmPassword}
+              onChange={handleChange}
+              disabled={isSubmitting}
+            />
+            {fieldErrors.confirmPassword && (
+              <span className="form-error">{fieldErrors.confirmPassword}</span>
+            )}
+          </div>
         </div>
 
         <button
@@ -184,12 +194,19 @@ export default function Signup() {
         </button>
       </form>
 
-      <p style={{ marginTop: '24px', fontSize: '0.875rem' }}>
-        Already have an account?{' '}
-        <Link to="/login" style={{ color: 'var(--accent-color)', fontWeight: 500 }}>
-          Sign in
+      <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '12px', alignItems: 'center', fontSize: '0.875rem' }}>
+        <p style={{ margin: 0 }}>
+          Already have an account?{' '}
+          <Link to="/login" style={{ color: 'var(--accent-color)', fontWeight: 500 }}>
+            Sign in
+          </Link>
+        </p>
+
+        <Link to="/" style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', display: 'inline-flex', alignItems: 'center', gap: '6px', fontWeight: 500 }}>
+          <ArrowLeft size={14} />
+          <span>Back to Landing Page</span>
         </Link>
-      </p>
+      </div>
     </div>
   );
 }

@@ -1,6 +1,16 @@
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import { 
+  LayoutDashboard, 
+  MessageSquare, 
+  Sliders, 
+  Settings as SettingsIcon, 
+  User, 
+  LogOut,
+  Bot,
+  Activity
+} from 'lucide-react';
 
 export default function AppLayout() {
   const { user, logout } = useAuth();
@@ -13,8 +23,20 @@ export default function AppLayout() {
     <div className="app-container">
       {/* Sidebar */}
       <aside className="sidebar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '32px' }}>
-          <span className="logo-dot"></span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '32px' }}>
+          <div style={{
+            width: '32px',
+            height: '32px',
+            borderRadius: '8px',
+            background: 'var(--accent-gradient)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            color: '#ffffff',
+            boxShadow: 'var(--shadow-glow)'
+          }}>
+            <Bot size={20} />
+          </div>
           <span style={{ fontSize: '1.25rem', fontWeight: 800, background: 'var(--accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
             ChatterFlow
           </span>
@@ -24,41 +46,55 @@ export default function AppLayout() {
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px', flex: 1 }}>
           <NavLink 
             to="/dashboard" 
-            className={({ isActive }) => `btn btn-secondary ${isActive ? 'btn-primary' : ''}`}
-            style={{ justifyContent: 'flex-start', padding: '12px 16px', gap: '10px' }}
+            className={({ isActive }) => `btn ${isActive ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ justifyContent: 'flex-start', padding: '12px 16px', gap: '12px' }}
           >
-            📊 Dashboard
+            <LayoutDashboard size={18} />
+            <span>Dashboard</span>
           </NavLink>
           <NavLink 
             to="/widgets" 
-            className={({ isActive }) => `btn btn-secondary ${isActive ? 'btn-primary' : ''}`}
-            style={{ justifyContent: 'flex-start', padding: '12px 16px', gap: '10px' }}
+            className={({ isActive }) => `btn ${isActive ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ justifyContent: 'flex-start', padding: '12px 16px', gap: '12px' }}
           >
-            💬 Widgets
+            <MessageSquare size={18} />
+            <span>Widgets</span>
           </NavLink>
           <NavLink 
             to="/playground" 
-            className={({ isActive }) => `btn btn-secondary ${isActive ? 'btn-primary' : ''}`}
-            style={{ justifyContent: 'flex-start', padding: '12px 16px', gap: '10px' }}
+            className={({ isActive }) => `btn ${isActive ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ justifyContent: 'flex-start', padding: '12px 16px', gap: '12px' }}
           >
-            🎮 Playground
+            <Sliders size={18} />
+            <span>Playground</span>
           </NavLink>
           <NavLink 
             to="/settings" 
-            className={({ isActive }) => `btn btn-secondary ${isActive ? 'btn-primary' : ''}`}
-            style={{ justifyContent: 'flex-start', padding: '12px 16px', gap: '10px' }}
+            className={({ isActive }) => `btn ${isActive ? 'btn-primary' : 'btn-secondary'}`}
+            style={{ justifyContent: 'flex-start', padding: '12px 16px', gap: '12px' }}
           >
-            ⚙️ Settings
+            <SettingsIcon size={18} />
+            <span>Settings</span>
           </NavLink>
         </nav>
 
         <div style={{ borderTop: '1px solid var(--border-color)', paddingTop: '20px', marginTop: '20px' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-            <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>
-              👤
+            <div style={{
+              width: '38px',
+              height: '38px',
+              borderRadius: '50%',
+              backgroundColor: 'var(--bg-tertiary)',
+              border: '1px solid var(--border-color)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              color: 'var(--text-secondary)'
+            }}>
+              <User size={18} />
             </div>
             <div style={{ overflow: 'hidden' }}>
-              <div style={{ fontSize: '0.875rem', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+              <div style={{ fontSize: '0.875rem', fontWeight: 600, color: 'var(--text-primary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                 {user?.name || 'User'}
               </div>
               <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
@@ -69,9 +105,10 @@ export default function AppLayout() {
           <button 
             onClick={handleLogout} 
             className="btn btn-secondary" 
-            style={{ width: '100%', padding: '8px 12px', fontSize: '0.875rem' }}
+            style={{ width: '100%', padding: '10px 12px', fontSize: '0.875rem', gap: '8px', justifyContent: 'center' }}
           >
-            Logout
+            <LogOut size={16} />
+            <span>Logout</span>
           </button>
         </div>
       </aside>
@@ -80,13 +117,16 @@ export default function AppLayout() {
       <div className="main-content">
         <header className="navbar">
           <div>
-            <h3 style={{ textTransform: 'capitalize', fontWeight: 500 }}>
-              Platform Foundation Console
+            <h3 style={{ textTransform: 'capitalize', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '8px' }}>
+              Platform Console
             </h3>
           </div>
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span className="badge badge-success">API Status: Connected</span>
-            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--success)' }}></div>
+            <span className="badge badge-success" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', padding: '4px 10px' }}>
+              <Activity size={14} />
+              API Connected
+            </span>
+            <div style={{ width: '8px', height: '8px', borderRadius: '50%', backgroundColor: 'var(--success)', boxShadow: '0 0 6px var(--success)' }}></div>
           </div>
         </header>
         <main className="content-body">
