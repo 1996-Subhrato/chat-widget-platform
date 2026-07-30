@@ -5,6 +5,8 @@ import cookieParser from 'cookie-parser';
 import morgan from 'morgan';
 import { sequelize } from './models/index.js';
 
+import authRoutes from './routes/authRoutes.js';
+
 const app = express();
 
 // Security foundation middleware
@@ -47,6 +49,9 @@ app.get('/api/health', async (req, res) => {
   }
 });
 
+// Authentication API Routes
+app.use('/api/auth', authRoutes);
+
 // Centralized 404 Route Handler
 app.use((req, res, next) => {
   res.status(404);
@@ -57,9 +62,19 @@ app.use((req, res, next) => {
 // Centralized Error Handling Middleware
 app.use((err, req, res, next) => {
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  const isProd = process.env.NODE_ENV === 'production';
+  
+  // Mask internal database/Sequelize details
+  let message = err.message || 'Internal Server Error';
+  if (err.name && err.name.includes('Sequelize')) {
+    message = 'A database error occurred';
+  }
+
   res.status(statusCode).json({
-    error: err.message || 'Internal Server Error',
-    stack: process.env.NODE_ENV === 'production' ? undefined : err.stack
+    error: {
+      code: err.code || 'INTERNAL_SERVER_ERROR',
+      message: message
+    }
   });
 });
 

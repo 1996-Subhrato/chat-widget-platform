@@ -1,84 +1,37 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
+import { useAuth } from '../context/AuthContext';
 
 export default function Onboarding() {
-  const navigate = useNavigate();
-  const [step, setStep] = useState(1);
-  const [companyName, setCompanyName] = useState('');
-  const [websiteUrl, setWebsiteUrl] = useState('');
-
-  const nextStep = () => setStep((prev) => prev + 1);
-  const prevStep = () => setStep((prev) => prev - 1);
-  
-  const handleComplete = (e) => {
-    e.preventDefault();
-    navigate('/dashboard');
-  };
+  const { user, logout } = useAuth();
 
   return (
-    <div>
-      <h2 style={{ marginBottom: '8px' }}>Setup Workspace</h2>
-      <p style={{ marginBottom: '24px', fontSize: '0.875rem' }}>Step {step} of 2</p>
+    <div style={{ textAlign: 'center', padding: '10px 0' }}>
+      <h2 style={{ marginBottom: '12px' }}>Welcome, {user?.name || 'User'}!</h2>
+      <p style={{ marginBottom: '24px', fontSize: '0.95rem', color: 'var(--text-secondary)' }}>
+        Plan selection will be implemented in Phase 2.
+      </p>
 
-      {step === 1 ? (
-        <div>
-          <div className="form-group">
-            <label className="form-label" htmlFor="company">Company / Project Name</label>
-            <input 
-              type="text" 
-              id="company" 
-              className="form-control" 
-              placeholder="Acme Corp" 
-              value={companyName}
-              onChange={(e) => setCompanyName(e.target.value)}
-              required 
-            />
-          </div>
-          <button 
-            type="button" 
-            onClick={nextStep} 
-            className="btn btn-primary" 
-            style={{ width: '100%', padding: '12px', marginTop: '10px' }}
-            disabled={!companyName.trim()}
-          >
-            Continue
-          </button>
-        </div>
-      ) : (
-        <div>
-          <div className="form-group">
-            <label className="form-label" htmlFor="website">Website URL (for widget whitelist)</label>
-            <input 
-              type="url" 
-              id="website" 
-              className="form-control" 
-              placeholder="https://example.com" 
-              value={websiteUrl}
-              onChange={(e) => setWebsiteUrl(e.target.value)}
-              required 
-            />
-          </div>
-          <div style={{ display: 'flex', gap: '12px', marginTop: '10px' }}>
-            <button 
-              type="button" 
-              onClick={prevStep} 
-              className="btn btn-secondary" 
-              style={{ flex: 1, padding: '12px' }}
-            >
-              Back
-            </button>
-            <button 
-              type="button" 
-              onClick={handleComplete} 
-              className="btn btn-primary" 
-              style={{ flex: 2, padding: '12px' }}
-              disabled={!websiteUrl.trim()}
-            >
-              Launch Console
-            </button>
-          </div>
-        </div>
-      )}
+      <div style={{
+        backgroundColor: 'var(--bg-tertiary)',
+        padding: '16px',
+        borderRadius: 'var(--radius-sm)',
+        border: '1px solid var(--border-color)',
+        marginBottom: '24px',
+        textAlign: 'left',
+        fontSize: '0.85rem'
+      }}>
+        <div style={{ color: 'var(--text-muted)', marginBottom: '4px' }}>Authenticated Session Details:</div>
+        <div><strong>User ID:</strong> {user?.id}</div>
+        <div><strong>Email:</strong> {user?.email}</div>
+      </div>
+
+      <button
+        onClick={logout}
+        className="btn btn-secondary"
+        style={{ width: '100%', padding: '10px 16px' }}
+      >
+        Sign Out
+      </button>
     </div>
   );
 }

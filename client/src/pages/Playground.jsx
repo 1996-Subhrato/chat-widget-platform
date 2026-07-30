@@ -147,7 +147,7 @@ export default function Playground() {
                     height: '32px',
                     display: 'flex',
                     alignItems: 'center',
-                    justify-content: 'center',
+                    justifyContent: 'center',
                     cursor: 'not-allowed',
                     opacity: 0.8
                   }}

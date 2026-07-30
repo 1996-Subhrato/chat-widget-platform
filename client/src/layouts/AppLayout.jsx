@@ -1,12 +1,12 @@
 import React from 'react';
-import { Outlet, NavLink, useNavigate } from 'react-router-dom';
+import { Outlet, NavLink } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
 
 export default function AppLayout() {
-  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
-  const handleLogout = () => {
-    // Scaffold logout
-    navigate('/login');
+  const handleLogout = async () => {
+    await logout();
   };
 
   return (
@@ -57,9 +57,13 @@ export default function AppLayout() {
             <div style={{ width: '36px', height: '36px', borderRadius: '50%', backgroundColor: 'var(--border-color)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1rem' }}>
               👤
             </div>
-            <div>
-              <div style={{ fontSize: '0.875rem', fontWeight: 500 }}>Demo User</div>
-              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)' }}>demo@chatterflow.io</div>
+            <div style={{ overflow: 'hidden' }}>
+              <div style={{ fontSize: '0.875rem', fontWeight: 500, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {user?.name || 'User'}
+              </div>
+              <div style={{ fontSize: '0.75rem', color: 'var(--text-secondary)', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
+                {user?.email || ''}
+              </div>
             </div>
           </div>
           <button 
